@@ -28,6 +28,12 @@
             <type>apklib</type>
         </dependency>
         <dependency>
+            <groupId>com.google.android.gms</groupId>
+            <artifactId>google-play-services</artifactId>
+            <version>12</version>
+            <type>apklib</type>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>

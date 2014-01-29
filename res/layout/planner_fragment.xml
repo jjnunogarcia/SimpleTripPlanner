@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp">
+
+    <EditText
+            android:id="@+id/planner_origin_edittext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences"
+            android:hint="@string/origin"/>
+
+    <EditText
+            android:id="@+id/planner_destination_edittext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/planner_origin_edittext"
+            android:inputType="textCapSentences"
+            android:hint="@string/destination"/>
+
+    <AutoCompleteTextView
+            android:id="@+id/autocomplete_country"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/planner_destination_edittext"
+            android:hint="Autocomplete"/>
+
+    <Button
+            android:id="@+id/planner_search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/autocomplete_country"
+            android:text="@string/search"/>
+
+    <!--<CalendarView-->
+            <!--android:id="@+id/planner_calendar_view"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/planner_search_button"-->
+            <!--android:layout_marginTop="35dp"/>-->
+
+</RelativeLayout>
