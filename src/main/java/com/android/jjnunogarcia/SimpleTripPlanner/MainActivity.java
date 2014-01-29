@@ -1,12 +1,11 @@
 package com.android.jjnunogarcia.SimpleTripPlanner;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.android.jjnunogarcia.SimpleTripPlanner.fragments.PlannerFragment;
-import com.example.SimpleTripPlanner.R;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends SherlockFragmentActivity {
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

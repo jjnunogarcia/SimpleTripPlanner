@@ -3,14 +3,17 @@ package com.android.jjnunogarcia.SimpleTripPlanner.requests;
 import com.android.jjnunogarcia.SimpleTripPlanner.model.Location;
 import com.android.jjnunogarcia.SimpleTripPlanner.requests.RemoteLocationParsingAsyncTask.RemoteLocationParsingInterface;
 import com.google.android.gms.maps.model.LatLng;
-import org.apache.http.protocol.HTTP;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.charset.Charset;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 
 /**
@@ -47,14 +50,37 @@ public class RemoteConnectionParser {
   }
 
   private JSONObject readJsonFromUrl() throws IOException, JSONException {
-    InputStream is = new URL(url).openStream();
-    try {
-      BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName(HTTP.UTF_8)));
-      String jsonText = readAll(rd);
-      return new JSONObject(jsonText);
-    } finally {
-      is.close();
+    DefaultHttpClient httpClient = new DefaultHttpClient();
+    HttpGet getRequest = new HttpGet(url);
+    getRequest.addHeader("accept", "application/json");
+
+    HttpResponse response = httpClient.execute(getRequest);
+
+    if (response.getStatusLine().getStatusCode() != 200) {
+      throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
     }
+
+    BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+
+    String jsonText = readAll(br);
+//    String output;
+//    System.out.println("Output from Server .... \n");
+//    while ((output = br.readLine()) != null) {
+//      System.out.println(output);
+//    }
+
+    httpClient.getConnectionManager().shutdown();
+    return new JSONObject(jsonText);
+
+//    HttpGet httpGet = new HttpGet(url);
+//    InputStream is = new URL(url).openStream();
+//    try {
+//      BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName(HTTP.UTF_8)));
+//      String jsonText = readAll(rd);
+//      return new JSONObject(jsonText);
+//    } finally {
+//      is.close();
+//    }
   }
 
   private ArrayList<Location> buildLocationsFromJsonObject(JSONObject jsonObject) throws JSONException {

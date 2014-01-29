@@ -2,7 +2,6 @@ package com.android.jjnunogarcia.SimpleTripPlanner.fragments;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -10,10 +9,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.android.jjnunogarcia.SimpleTripPlanner.R;
 import com.android.jjnunogarcia.SimpleTripPlanner.adapters.LocationAdapter;
 import com.android.jjnunogarcia.SimpleTripPlanner.model.Location;
 import com.android.jjnunogarcia.SimpleTripPlanner.requests.RemoteLocationParsingAsyncTask;
-import com.example.SimpleTripPlanner.R;
 
 import java.util.ArrayList;
 
@@ -22,7 +22,7 @@ import java.util.ArrayList;
  *
  * @author jjnunogarcia@gmail.com
  */
-public class PlannerFragment extends Fragment {
+public class PlannerFragment extends SherlockFragment {
   public static final  String TAG                                 = PlannerFragment.class.getSimpleName();
   private static final int    MINIMUM_TEXT_LENGHT_FOR_SUGGESTIONS = 3;
 
