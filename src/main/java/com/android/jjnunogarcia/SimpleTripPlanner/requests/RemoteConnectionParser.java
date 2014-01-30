@@ -64,12 +64,12 @@ public class RemoteConnectionParser {
       http = (HttpURLConnection) theUrl.openConnection();
     }
 
-    String jsonText = getJSON(http, 30000);
+    String jsonText = getJson(http, 30000);
 
     return new JSONObject(jsonText);
   }
 
-  private String getJSON(HttpURLConnection http, int timeout) {
+  private String getJson(HttpURLConnection http, int timeout) {
     InputStream inputStream = null;
     try {
       http.setRequestMethod("GET");

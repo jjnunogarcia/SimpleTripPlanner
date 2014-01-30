@@ -46,7 +46,7 @@ public class PlannerFragment extends SherlockFragment {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+      autocompleteAdapter.getFilter().filter(s.toString());
     }
 
     @Override
@@ -79,7 +79,7 @@ public class PlannerFragment extends SherlockFragment {
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    autocompleteAdapter = new LocationAdapter(getActivity().getApplicationContext(), R.layout.location_suggestion_row, new ArrayList<Location>());
+    autocompleteAdapter = new LocationAdapter(getActivity().getApplicationContext(), new ArrayList<Location>());
     autocomplete.setAdapter(autocompleteAdapter);
     searchButton.setOnClickListener(searchButtonClickListener);
     autocomplete.addTextChangedListener(originFieldTextWatcher);

@@ -4,9 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.*;
 import com.android.jjnunogarcia.SimpleTripPlanner.R;
 import com.android.jjnunogarcia.SimpleTripPlanner.model.Location;
 
@@ -17,15 +15,40 @@ import java.util.ArrayList;
  *
  * @author nuno@neofonie.de
  */
-public class LocationAdapter extends ArrayAdapter<Location> {
+public class LocationAdapter extends BaseAdapter implements Filterable {
   private final Context             context;
   private       ArrayList<Location> locations;
+  private       ArrayList<Location> originalValues;
+  private Filter nameFilter;
 
-  public LocationAdapter(Context context, int resource, ArrayList<Location> locations) {
-    super(context, resource);
+  public LocationAdapter(Context context, ArrayList<Location> locations) {
     this.context = context;
-    clear();
-    addAll(locations);
+    this.locations = locations;
+  }
+
+  public void add(Location location) {
+    locations.add(location);
+    notifyDataSetChanged();
+  }
+
+  public void clear() {
+    locations.clear();
+    notifyDataSetChanged();
+  }
+
+  @Override
+  public int getCount() {
+    return locations.size();
+  }
+
+  @Override
+  public Object getItem(int position) {
+    return locations.get(position);
+  }
+
+  @Override
+  public long getItemId(int position) {
+    return position;
   }
 
   @Override
@@ -43,7 +66,7 @@ public class LocationAdapter extends ArrayAdapter<Location> {
       viewHolder = (ViewHolder) view.getTag();
     }
 
-    Location location = this.locations.get(position);
+    Location location = locations.get(position);
     viewHolder.name.setText(location.getName());
 
 
@@ -51,45 +74,46 @@ public class LocationAdapter extends ArrayAdapter<Location> {
   }
 
   // TODO Create more than one filter, i. e., name or proximity
-//  @Override
-//  public Filter getFilter() {
-//    return nameFilter;
-//  }
-//
-//  Filter nameFilter = new Filter() {
-//    public String convertResultToString(Object resultValue) {
-//      String str = ((Customer)(resultValue)).getName();
-//      return str;
-//    }
-//    @Override
-//    protected FilterResults performFiltering(CharSequence constraint) {
-//      if(constraint != null) {
-//        suggestions.clear();
-//        for (Customer customer : itemsAll) {
-//          if(customer.getName().toLowerCase().startsWith(constraint.toString().toLowerCase())){
-//            suggestions.add(customer);
-//          }
-//        }
-//        FilterResults filterResults = new FilterResults();
-//        filterResults.values = suggestions;
-//        filterResults.count = suggestions.size();
-//        return filterResults;
-//      } else {
-//        return new FilterResults();
-//      }
-//    }
-//    @Override
-//    protected void publishResults(CharSequence constraint, FilterResults results) {
-//      ArrayList<Customer> filteredList = (ArrayList<Customer>) results.values;
-//      if(results != null && results.count > 0) {
-//        clear();
-//        for (Customer c : filteredList) {
-//          add(c);
-//        }
-//        notifyDataSetChanged();
-//      }
-//    }
-//  };
+  @Override
+  public Filter getFilter() {
+    nameFilter = new Filter() {
+
+      @Override
+      protected void publishResults(CharSequence constraint, FilterResults results) {
+        locations = (ArrayList<Location>) results.values; // has the filtered values
+        notifyDataSetChanged();
+      }
+
+      @Override
+      protected FilterResults performFiltering(CharSequence constraint) {
+        FilterResults results = new FilterResults();        // Holds the results of a filtering operation in values
+        ArrayList<Location> filteredArrList = new ArrayList<Location>();
+
+        if (originalValues == null) {
+          originalValues = new ArrayList<Location>(locations); // saves the original data in originalValues
+        }
+
+        if (constraint == null || constraint.length() == 0) {
+          // set the Original result to return
+          results.count = originalValues.size();
+          results.values = originalValues;
+        } else {
+          constraint = constraint.toString().toLowerCase();
+          for (Location originalValue : originalValues) {
+            String data = originalValue.getName();
+            if (data.toLowerCase().startsWith(constraint.toString())) {
+              filteredArrList.add(originalValue);
+            }
+          }
+          // set the Filtered result to return
+          results.count = filteredArrList.size();
+          results.values = filteredArrList;
+        }
+        return results;
+      }
+    };
+    return nameFilter;
+  }
 
   private static class ViewHolder {
     RelativeLayout rowLayout;
