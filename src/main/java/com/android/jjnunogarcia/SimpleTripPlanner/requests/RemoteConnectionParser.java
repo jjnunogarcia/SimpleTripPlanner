@@ -66,7 +66,7 @@ public class RemoteConnectionParser {
 
     String jsonText = getJson(http, 30000);
 
-    return new JSONObject(jsonText);
+    return jsonText != null ? new JSONObject(jsonText) : null;
   }
 
   private String getJson(HttpURLConnection http, int timeout) {
@@ -106,6 +106,10 @@ public class RemoteConnectionParser {
 
   private ArrayList<Location> buildLocationsFromJsonObject(JSONObject jsonObject) throws JSONException {
     ArrayList<Location> locations = new ArrayList<Location>();
+
+    if (jsonObject == null) {
+      return locations;
+    }
 
     if (jsonObject.has(JSON_RESULTS)) {
       JSONArray jsonArray = jsonObject.optJSONArray(JSON_RESULTS);

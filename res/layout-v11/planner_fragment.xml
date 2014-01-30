@@ -44,4 +44,11 @@
 
     </RelativeLayout>
 
+    <CalendarView
+            android:id="@+id/planner_calendar_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/planner_top_container"
+            android:layout_marginTop="35dp"/>
+
 </RelativeLayout>

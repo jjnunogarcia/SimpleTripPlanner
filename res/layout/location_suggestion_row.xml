@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/location_suggestion_row_root_layout"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="55dp"
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:padding="5dip">
@@ -16,7 +16,20 @@
             android:textColor="@color/plannertheme_color"
             android:background="@color/transparent"
             android:layout_centerVertical="true"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:text="Text"/>
+
+    <TextView
+            android:id="@+id/location_suggestion_row_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:textColor="@color/plannertheme_color"
+            android:background="@color/transparent"
+            android:layout_centerVertical="true"
+            android:textSize="10sp"
+            android:text="1.2 Km"/>
 
 </RelativeLayout>

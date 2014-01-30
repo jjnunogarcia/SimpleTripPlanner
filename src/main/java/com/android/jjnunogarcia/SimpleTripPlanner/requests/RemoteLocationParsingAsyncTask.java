@@ -35,7 +35,7 @@ public class RemoteLocationParsingAsyncTask extends AsyncTask<Void, Location, Vo
   protected void onProgressUpdate(Location... values) {
     super.onProgressUpdate(values);
     if (adapter != null && values.length > 0) {
-      adapter.add(values[0]);
+      adapter.addIfNotExisting(values[0]);
     }
   }
 
