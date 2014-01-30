@@ -13,6 +13,7 @@ public class Location {
   private String name;
   private String typeSpecific;
   private LatLng geoPosition;
+  private float  distanceToDestiny;
 
   public Location() {
     type = "";
@@ -20,6 +21,7 @@ public class Location {
     name = "";
     typeSpecific = "";
     geoPosition = null;
+    distanceToDestiny = -1;
   }
 
   @Override
@@ -79,5 +81,13 @@ public class Location {
 
   public void setGeoPosition(LatLng geoPosition) {
     this.geoPosition = geoPosition;
+  }
+
+  public float getDistanceToDestiny() {
+    return distanceToDestiny;
+  }
+
+  public void setDistanceToDestiny(float distanceToDestiny) {
+    this.distanceToDestiny = distanceToDestiny;
   }
 }

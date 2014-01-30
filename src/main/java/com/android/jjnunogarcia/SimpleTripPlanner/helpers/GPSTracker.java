@@ -20,14 +20,19 @@ public class GpsTracker extends Service implements LocationListener {
   private static final long   MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; //10 meters
   private static final long   MIN_TIME_BETWEEN_UPDATES        = 1000 * 60 * 1; // 1 minute
 
-  private   Context         context;
-  private   boolean         isGPSEnabled;
-  private   boolean         isNetworkEnabled;
-  private   boolean         canGetLocation;
-  private   Location        location;
-  private   double          latitude;
-  private   double          longitude;
-  protected LocationManager locationManager;
+  private Context                  context;
+  private boolean                  isGPSEnabled;
+  private boolean                  isNetworkEnabled;
+  private boolean                  canGetLocation;
+  private Location                 location;
+  private double                   latitude;
+  private double                   longitude;
+  private LocationManager          locationManager;
+  private OnLocationChangeListener locationChangeListener;
+
+  public interface OnLocationChangeListener {
+    void onLocationChanged(Location location);
+  }
 
   public GpsTracker(Context context) {
     this.context = context;
@@ -115,6 +120,9 @@ public class GpsTracker extends Service implements LocationListener {
 
   @Override
   public void onLocationChanged(Location location) {
+    if (locationChangeListener != null) {
+      locationChangeListener.onLocationChanged(location);
+    }
   }
 
   @Override
@@ -132,5 +140,9 @@ public class GpsTracker extends Service implements LocationListener {
   @Override
   public IBinder onBind(Intent intent) {
     return null;
+  }
+
+  public void setLocationChangeListener(OnLocationChangeListener locationChangeListener) {
+    this.locationChangeListener = locationChangeListener;
   }
 }

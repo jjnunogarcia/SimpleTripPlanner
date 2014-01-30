@@ -6,11 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.android.jjnunogarcia.SimpleTripPlanner.R;
+import com.android.jjnunogarcia.SimpleTripPlanner.comparators.DistanceComparator;
+import com.android.jjnunogarcia.SimpleTripPlanner.comparators.NameComparator;
 import com.android.jjnunogarcia.SimpleTripPlanner.helpers.GpsTracker;
 import com.android.jjnunogarcia.SimpleTripPlanner.model.Location;
+import com.android.jjnunogarcia.SimpleTripPlanner.model.SortOrder;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Date: 29.01.14
@@ -21,7 +26,9 @@ public class LocationAdapter extends BaseAdapter implements Filterable {
   private final Context             context;
   private       ArrayList<Location> locations;
   private       GpsTracker          gpsTracker;
+  private       SortOrder           sortOrder;
   private       ArrayList<Location> originalValues;
+  private       LatLng              userLocation;
   private Filter nameFilter = new Filter() {
 
     @Override
@@ -59,10 +66,11 @@ public class LocationAdapter extends BaseAdapter implements Filterable {
     }
   };
 
-  public LocationAdapter(Context context, ArrayList<Location> locations, GpsTracker gpsTracker) {
+  public LocationAdapter(Context context, ArrayList<Location> locations, GpsTracker gpsTracker, SortOrder sortOrder) {
     this.context = context;
     this.locations = locations;
     this.gpsTracker = gpsTracker;
+    this.sortOrder = sortOrder;
   }
 
   public void add(Location location) {
@@ -75,6 +83,29 @@ public class LocationAdapter extends BaseAdapter implements Filterable {
       locations.add(location);
     }
     notifyDataSetChanged();
+  }
+
+  @Override
+  public void notifyDataSetChanged() {
+    super.notifyDataSetChanged();
+    if (gpsTracker.canGetLocation()) {
+      userLocation = new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude());
+      setNewDistance();
+
+      if (sortOrder == SortOrder.NAME) {
+        Collections.sort(locations, new NameComparator());
+      } else {
+        Collections.sort(locations, new DistanceComparator());
+      }
+    }
+  }
+
+  private void setNewDistance() {
+    for (Location location : locations) {
+      float[] results = new float[1];
+      android.location.Location.distanceBetween(userLocation.latitude, userLocation.longitude, location.getGeoPosition().latitude, location.getGeoPosition().longitude, results);
+      location.setDistanceToDestiny(roundNumber(results[0] / 1000, 2));
+    }
   }
 
   public void clear() {
@@ -116,11 +147,8 @@ public class LocationAdapter extends BaseAdapter implements Filterable {
     Location location = locations.get(position);
     viewHolder.name.setText(location.getName());
 
-    if (gpsTracker.canGetLocation()) {
-      float[] results = new float[1];
-      android.location.Location.distanceBetween(gpsTracker.getLatitude(), gpsTracker.getLongitude(), location.getGeoPosition().latitude, location.getGeoPosition().longitude, results);
-      BigDecimal distanceInKm = roundNumber(results[0] / 1000, 2);
-      viewHolder.distance.setText(String.valueOf(distanceInKm) + " Km");
+    if (location.getDistanceToDestiny() != -1) {
+      viewHolder.distance.setText(String.valueOf(location.getDistanceToDestiny()) + " Km");
     } else {
       viewHolder.distance.setText("");
     }
@@ -129,13 +157,17 @@ public class LocationAdapter extends BaseAdapter implements Filterable {
     return view;
   }
 
-  private static BigDecimal roundNumber(float number, int decimals) {
-    return new BigDecimal(number).setScale(decimals, BigDecimal.ROUND_HALF_UP);
+  private static float roundNumber(float number, int decimals) {
+    return new BigDecimal(number).setScale(decimals, BigDecimal.ROUND_HALF_UP).floatValue();
   }
 
   @Override
   public Filter getFilter() {
     return nameFilter;
+  }
+
+  public void setSortOrder(SortOrder sortOrder) {
+    this.sortOrder = sortOrder;
   }
 
   private static class ViewHolder {

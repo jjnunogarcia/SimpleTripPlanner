@@ -15,7 +15,9 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.android.jjnunogarcia.SimpleTripPlanner.R;
 import com.android.jjnunogarcia.SimpleTripPlanner.adapters.LocationAdapter;
 import com.android.jjnunogarcia.SimpleTripPlanner.helpers.GpsTracker;
+import com.android.jjnunogarcia.SimpleTripPlanner.helpers.GpsTracker.OnLocationChangeListener;
 import com.android.jjnunogarcia.SimpleTripPlanner.model.Location;
+import com.android.jjnunogarcia.SimpleTripPlanner.model.SortOrder;
 import com.android.jjnunogarcia.SimpleTripPlanner.requests.RemoteLocationParsingAsyncTask;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ import java.util.ArrayList;
  *
  * @author jjnunogarcia@gmail.com
  */
-public class PlannerFragment extends SherlockFragment implements OnClickListener, TextWatcher {
+public class PlannerFragment extends SherlockFragment implements OnClickListener, TextWatcher, OnLocationChangeListener {
   public static final  String TAG                                 = PlannerFragment.class.getSimpleName();
   private static final int    MINIMUM_TEXT_LENGHT_FOR_SUGGESTIONS = 3;
 
@@ -34,7 +36,7 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
   private CalendarView         calendarView;
   private Button               searchButton;
   private LocationAdapter      autocompleteAdapter;
-  private GpsTracker           gpsTracker;
+  private SortOrder            sortOrder;
   private AdapterView.OnItemClickListener originItemClickListener      = new AdapterView.OnItemClickListener() {
 
     @Override
@@ -53,6 +55,7 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
   };
 
   public PlannerFragment() {
+    sortOrder = SortOrder.DISTANCE;
   }
 
   @Override
@@ -61,7 +64,10 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
     originEditText = (AutoCompleteTextView) view.findViewById(R.id.planner_origin_edittext);
     destinationEditText = (AutoCompleteTextView) view.findViewById(R.id.planner_destination_edittext);
     searchButton = (Button) view.findViewById(R.id.planner_search_button);
-    calendarView = (CalendarView) view.findViewById(R.id.planner_calendar_view);
+
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+      calendarView = (CalendarView) view.findViewById(R.id.planner_calendar_view);
+    }
 
     return view;
   }
@@ -70,8 +76,9 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    gpsTracker = new GpsTracker(getActivity().getApplicationContext());
-    autocompleteAdapter = new LocationAdapter(getActivity().getApplicationContext(), new ArrayList<Location>(), gpsTracker);
+    GpsTracker gpsTracker = new GpsTracker(getActivity().getApplicationContext());
+    gpsTracker.setLocationChangeListener(this);
+    autocompleteAdapter = new LocationAdapter(getActivity().getApplicationContext(), new ArrayList<Location>(), gpsTracker, sortOrder);
     originEditText.setAdapter(autocompleteAdapter);
     destinationEditText.setAdapter(autocompleteAdapter);
     originEditText.addTextChangedListener(this);
@@ -107,5 +114,16 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
   @Override
   public void onClick(View v) {
     Toast.makeText(getActivity().getApplicationContext(), getResources().getString(R.string.search_button_message), Toast.LENGTH_SHORT).show();
+  }
+
+  @Override
+  public void onLocationChanged(android.location.Location location) {
+    autocompleteAdapter.notifyDataSetChanged();
+  }
+
+  public void setSortOrder(SortOrder sortOrder) {
+    this.sortOrder = sortOrder;
+    autocompleteAdapter.setSortOrder(sortOrder);
+    autocompleteAdapter.notifyDataSetChanged();
   }
 }

@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:id="@+id/sort_locations_button"
+            android:title="@string/sort_locations_button"
+            android:icon="@drawable/order_by"
+            android:showAsAction="ifRoom|collapseActionView">
+
+        <menu>
+            <item
+                    android:id="@+id/sort_locations_button_by_distance"
+                    android:title="@string/sort_locations_button_by_distance"/>
+            <item
+                    android:id="@+id/sort_locations_alphabetically"
+                    android:title="@string/sort_locations_button_alphabetically"/>
+        </menu>
+    </item>
+</menu>

@@ -6,4 +6,7 @@
     <string name="destination">Destination</string>
     <string name="search">Search</string>
     <string name="search_button_message">Search is not yet implemented</string>
+    <string name="sort_locations_button">Order by</string>
+    <string name="sort_locations_button_by_distance">By distance</string>
+    <string name="sort_locations_button_alphabetically">Alphabetically</string>
 </resources>
