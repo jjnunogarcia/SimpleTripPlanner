@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="PlannerTheme" parent="@style/_PlannerTheme"/>
+
+  <style name="_PlannerTheme" parent="Theme.Sherlock.Light">
+
+    <item name="android:editTextStyle">@style/EditTextPlannerTheme</item>
+
+    <item name="android:textColorHighlight">#995f812c</item>
+
+    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewPlannerTheme</item>
+
+    <item name="android:buttonStyle">@style/ButtonPlannerTheme</item>
+
+    <item name="android:imageButtonStyle">@style/ImageButtonPlannerTheme</item>
+
+  </style>
+
+</resources>

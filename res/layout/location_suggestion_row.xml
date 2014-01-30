@@ -13,7 +13,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:layout_alignParentLeft="true"
-            android:textColor="@color/planner_color"
+            android:textColor="@color/plannertheme_color"
             android:background="@color/transparent"
             android:layout_centerVertical="true"
             android:textSize="14sp"
