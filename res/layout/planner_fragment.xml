@@ -10,6 +10,7 @@
             android:layout_height="wrap_content"
             android:scrollHorizontally="true"
             android:ellipsize="end"
+            android:inputType="textCapSentences"
             android:hint="@string/origin"
             android:layout_marginTop="10dp"/>
 

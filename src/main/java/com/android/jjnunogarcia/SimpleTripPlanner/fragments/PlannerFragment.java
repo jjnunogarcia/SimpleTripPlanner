@@ -31,7 +31,7 @@ import java.util.Calendar;
  *
  * @author jjnunogarcia@gmail.com
  */
-public class PlannerFragment extends SherlockFragment implements OnClickListener, OnItemClickListener, TextWatcher, OnLocationChangeListener {
+public class PlannerFragment extends SherlockFragment implements OnClickListener, TextWatcher, OnLocationChangeListener {
   public static final  String TAG                                 = PlannerFragment.class.getSimpleName();
   private static final int    MINIMUM_TEXT_LENGHT_FOR_SUGGESTIONS = 3;
 
@@ -41,6 +41,20 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
   private EditText             selectedDateTextView;
   private LocationAdapter      autocompleteAdapter;
   private SortOrder            sortOrder;
+  private OnItemClickListener originItemClickListener      = new OnItemClickListener() {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+      Location location = (Location) parent.getAdapter().getItem(position);
+      originEditText.setText(location.getName());
+    }
+  };
+  private OnItemClickListener destinationItemClickListener = new OnItemClickListener() {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+      Location location = (Location) parent.getAdapter().getItem(position);
+      destinationEditText.setText(location.getName());
+    }
+  };
 
   public PlannerFragment() {
     sortOrder = SortOrder.DISTANCE;
@@ -65,16 +79,18 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
     gpsTracker.setLocationChangeListener(this);
     autocompleteAdapter = new LocationAdapter(getActivity().getApplicationContext(), new ArrayList<Location>(), gpsTracker, sortOrder);
     originEditText.setAdapter(autocompleteAdapter);
-    destinationEditText.setAdapter(autocompleteAdapter);
     originEditText.addTextChangedListener(this);
+    originEditText.setOnClickListener(this);
+    originEditText.setOnItemClickListener(originItemClickListener);
+    destinationEditText.setAdapter(autocompleteAdapter);
     destinationEditText.addTextChangedListener(this);
-    searchButton.setOnClickListener(this);
-    originEditText.setOnItemClickListener(this);
-    destinationEditText.setOnItemClickListener(this);
+    destinationEditText.setOnClickListener(this);
+    destinationEditText.setOnItemClickListener(destinationItemClickListener);
     selectedDateTextView.setOnClickListener(this);
     Calendar calendar = Calendar.getInstance();
     SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
     selectedDateTextView.setText(sdf.format(calendar.getTime()));
+    searchButton.setOnClickListener(this);
   }
 
   @Override
@@ -107,17 +123,16 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
     } else if (v.getId() == R.id.planner_date_selected) {
       String[] dateElements = selectedDateTextView.getText().toString().split("\\.");
       ((PlannerActivity) getActivity()).showDateDialogFragment(Integer.valueOf(dateElements[0]), Integer.valueOf(dateElements[1]), Integer.valueOf(dateElements[2]));
-    }
-  }
-
-  @Override
-  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    if (view.getId() == R.id.planner_origin_edittext) {
-      Location location = (Location) parent.getAdapter().getItem(position);
-      originEditText.setText(location.getName());
-    } else if (view.getId() == R.id.planner_destination_edittext) {
-      Location location = (Location) parent.getAdapter().getItem(position);
-      destinationEditText.setText(location.getName());
+    } else if (v.getId() == R.id.planner_origin_edittext) {
+      if (originEditText.getText().length() >= MINIMUM_TEXT_LENGHT_FOR_SUGGESTIONS) {
+        originEditText.setText(originEditText.getText());
+        originEditText.setSelection(originEditText.getText().length());
+      }
+    } else if (v.getId() == R.id.planner_destination_edittext) {
+      if (destinationEditText.getText().length() >= MINIMUM_TEXT_LENGHT_FOR_SUGGESTIONS) {
+        destinationEditText.setText(destinationEditText.getText());
+        destinationEditText.setSelection(destinationEditText.getText().length());
+      }
     }
   }
 
