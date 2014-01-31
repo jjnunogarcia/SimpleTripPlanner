@@ -9,4 +9,7 @@
     <string name="sort_locations_button">Order by</string>
     <string name="sort_locations_button_by_distance">By distance</string>
     <string name="sort_locations_button_alphabetically">Alphabetically</string>
+    <string name="date">Select date</string>
+    <string name="set_date">Set date</string>
+    <string name="cancel">Cancel</string>
 </resources>

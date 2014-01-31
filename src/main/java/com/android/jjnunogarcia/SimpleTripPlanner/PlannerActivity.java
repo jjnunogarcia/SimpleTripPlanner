@@ -6,9 +6,11 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.android.jjnunogarcia.SimpleTripPlanner.fragments.PlannerFragment;
+import com.android.jjnunogarcia.SimpleTripPlanner.fragments.dialogs.SelectDateDialogFragment;
+import com.android.jjnunogarcia.SimpleTripPlanner.interfaces.DateDialogInterface;
 import com.android.jjnunogarcia.SimpleTripPlanner.model.SortOrder;
 
-public class PlannerActivity extends SherlockFragmentActivity {
+public class PlannerActivity extends SherlockFragmentActivity implements DateDialogInterface {
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -45,11 +47,33 @@ public class PlannerActivity extends SherlockFragmentActivity {
     ft.replace(R.id.planner_frame, plannerFragment, PlannerFragment.TAG).commit();
   }
 
+  public SelectDateDialogFragment showDateDialogFragment(int day, int month, int year) {
+    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+    SelectDateDialogFragment selectDateDialogFragment = new SelectDateDialogFragment();
+    Bundle arguments = new Bundle();
+    arguments.putInt(SelectDateDialogFragment.KEY_OLD_DAY, day);
+    arguments.putInt(SelectDateDialogFragment.KEY_OLD_MONTH, month);
+    arguments.putInt(SelectDateDialogFragment.KEY_OLD_YEAR, year);
+    selectDateDialogFragment.setArguments(arguments);
+    selectDateDialogFragment.show(fragmentTransaction, SelectDateDialogFragment.TAG);
+
+    return selectDateDialogFragment;
+  }
+
   private void setNewSortOrder(SortOrder sortOrder) {
     PlannerFragment plannerFragment = (PlannerFragment) getSupportFragmentManager().findFragmentByTag(PlannerFragment.TAG);
 
     if (plannerFragment != null) {
       plannerFragment.setSortOrder(sortOrder);
+    }
+  }
+
+  @Override
+  public void onSaveDateDialogClicked(String dateSelected) {
+    PlannerFragment plannerFragment = (PlannerFragment) getSupportFragmentManager().findFragmentByTag(PlannerFragment.TAG);
+
+    if (plannerFragment != null) {
+      plannerFragment.setDateText(dateSelected);
     }
   }
 }

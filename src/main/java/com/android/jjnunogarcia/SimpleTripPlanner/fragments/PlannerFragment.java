@@ -11,7 +11,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.*;
+import android.widget.AdapterView.OnItemClickListener;
 import com.actionbarsherlock.app.SherlockFragment;
+import com.android.jjnunogarcia.SimpleTripPlanner.PlannerActivity;
 import com.android.jjnunogarcia.SimpleTripPlanner.R;
 import com.android.jjnunogarcia.SimpleTripPlanner.adapters.LocationAdapter;
 import com.android.jjnunogarcia.SimpleTripPlanner.helpers.GpsTracker;
@@ -20,39 +22,25 @@ import com.android.jjnunogarcia.SimpleTripPlanner.model.Location;
 import com.android.jjnunogarcia.SimpleTripPlanner.model.SortOrder;
 import com.android.jjnunogarcia.SimpleTripPlanner.requests.RemoteLocationParsingAsyncTask;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Date: 29.01.14
  *
  * @author jjnunogarcia@gmail.com
  */
-public class PlannerFragment extends SherlockFragment implements OnClickListener, TextWatcher, OnLocationChangeListener {
+public class PlannerFragment extends SherlockFragment implements OnClickListener, OnItemClickListener, TextWatcher, OnLocationChangeListener {
   public static final  String TAG                                 = PlannerFragment.class.getSimpleName();
   private static final int    MINIMUM_TEXT_LENGHT_FOR_SUGGESTIONS = 3;
 
   private AutoCompleteTextView originEditText;
   private AutoCompleteTextView destinationEditText;
-  private CalendarView         calendarView;
   private Button               searchButton;
+  private EditText             selectedDateTextView;
   private LocationAdapter      autocompleteAdapter;
   private SortOrder            sortOrder;
-  private AdapterView.OnItemClickListener originItemClickListener      = new AdapterView.OnItemClickListener() {
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-      Location location = (Location) parent.getAdapter().getItem(position);
-      originEditText.setText(location.getName());
-    }
-  };
-  private AdapterView.OnItemClickListener destinationItemClickListener = new AdapterView.OnItemClickListener() {
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-      Location location = (Location) parent.getAdapter().getItem(position);
-      destinationEditText.setText(location.getName());
-    }
-  };
 
   public PlannerFragment() {
     sortOrder = SortOrder.DISTANCE;
@@ -64,10 +52,7 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
     originEditText = (AutoCompleteTextView) view.findViewById(R.id.planner_origin_edittext);
     destinationEditText = (AutoCompleteTextView) view.findViewById(R.id.planner_destination_edittext);
     searchButton = (Button) view.findViewById(R.id.planner_search_button);
-
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
-      calendarView = (CalendarView) view.findViewById(R.id.planner_calendar_view);
-    }
+    selectedDateTextView = (EditText) view.findViewById(R.id.planner_date_selected);
 
     return view;
   }
@@ -84,8 +69,12 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
     originEditText.addTextChangedListener(this);
     destinationEditText.addTextChangedListener(this);
     searchButton.setOnClickListener(this);
-    originEditText.setOnItemClickListener(originItemClickListener);
-    destinationEditText.setOnItemClickListener(destinationItemClickListener);
+    originEditText.setOnItemClickListener(this);
+    destinationEditText.setOnItemClickListener(this);
+    selectedDateTextView.setOnClickListener(this);
+    Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+    selectedDateTextView.setText(sdf.format(calendar.getTime()));
   }
 
   @Override
@@ -113,7 +102,23 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
 
   @Override
   public void onClick(View v) {
-    Toast.makeText(getActivity().getApplicationContext(), getResources().getString(R.string.search_button_message), Toast.LENGTH_SHORT).show();
+    if (v.getId() == R.id.planner_search_button) {
+      Toast.makeText(getActivity().getApplicationContext(), getResources().getString(R.string.search_button_message), Toast.LENGTH_SHORT).show();
+    } else if (v.getId() == R.id.planner_date_selected) {
+      String[] dateElements = selectedDateTextView.getText().toString().split("\\.");
+      ((PlannerActivity) getActivity()).showDateDialogFragment(Integer.valueOf(dateElements[0]), Integer.valueOf(dateElements[1]), Integer.valueOf(dateElements[2]));
+    }
+  }
+
+  @Override
+  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    if (view.getId() == R.id.planner_origin_edittext) {
+      Location location = (Location) parent.getAdapter().getItem(position);
+      originEditText.setText(location.getName());
+    } else if (view.getId() == R.id.planner_destination_edittext) {
+      Location location = (Location) parent.getAdapter().getItem(position);
+      destinationEditText.setText(location.getName());
+    }
   }
 
   @Override
@@ -125,5 +130,9 @@ public class PlannerFragment extends SherlockFragment implements OnClickListener
     this.sortOrder = sortOrder;
     autocompleteAdapter.setSortOrder(sortOrder);
     autocompleteAdapter.notifyDataSetChanged();
+  }
+
+  public void setDateText(String dateSelected) {
+    selectedDateTextView.setText(dateSelected);
   }
 }
